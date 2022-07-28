@@ -2,6 +2,8 @@ package com.mygdx.quizgame;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.mygdx.quizgame.DBManagement.DesktopDatabase;
+import com.mygdx.quizgame.DBManagement.DesktopResult;
 import com.mygdx.quizgame.MainGame;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
@@ -11,6 +13,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("QuizGame");
 		config.setWindowedMode(450, 800);
-		new Lwjgl3Application(new MainGame(), config);
+		new Lwjgl3Application(new MainGame(new DesktopDatabase(), new DesktopResult()), config);
 	}
 }

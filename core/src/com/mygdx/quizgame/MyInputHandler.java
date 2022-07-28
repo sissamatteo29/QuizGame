@@ -18,6 +18,7 @@ public class MyInputHandler implements InputProcessor {
         if (keycode == Input.Keys.UP){
            ((OrthographicCamera) game.viewport.getCamera()).zoom += 0.4;
            ((OrthographicCamera) game.viewport.getCamera()).update();
+
         }
         if (keycode == Input.Keys.DOWN){
             ((OrthographicCamera) game.viewport.getCamera()).zoom -= 0.4;

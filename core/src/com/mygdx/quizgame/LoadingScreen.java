@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -41,12 +42,11 @@ public class LoadingScreen extends ScreenAdapter {
                 game.backgroundSprite = new Sprite(game.assetManager.get("Background.jpg", Texture.class));
                 game.font = game.assetManager.get("font.fnt", BitmapFont.class);
                 game.skin = game.assetManager.get("uiskin.json", Skin.class);
-                game.skin2 = game.assetManager.get("level-plane-ui.json", Skin.class);
                 endPauseTime = System.currentTimeMillis() + 2000;
                 first = false;
             }
             if (endPauseTime < System.currentTimeMillis()) {
-                game.setScreen(game.startScreen);
+                game.setScreen(game.animationScreen);
             }
 
             game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
@@ -56,7 +56,7 @@ public class LoadingScreen extends ScreenAdapter {
             game.font.draw(game.batch, "Game Loaded", -game.viewport.getWorldWidth() / 2 + 11f, -game.viewport.getWorldHeight() / 2 + 22.5f);
             game.batch.end();
             //initButtons to do AFTER having loaded the skin
-            initButtons();
+            initButtonsAndLabels();
         }
 
         progress = game.assetManager.getProgress();
@@ -95,16 +95,26 @@ public class LoadingScreen extends ScreenAdapter {
     }
 
 
-    private void initButtons() {
+    private void initButtonsAndLabels() {
         game.startGame = new TextButton("New Game", game.skin, "default");
         game.quitGame = new TextButton("Quit", game.skin, "default");
         game.resumeGame = new TextButton("Resume", game.skin, "default");
         game.pauseGame = new TextButton("Pause", game.skin, "default");
 
+        game.answersButtonArray = new TextButton[4];
+        game.answersButtonArray[0] = game.answer0;
+        game.answersButtonArray[1] = game.answer1;
+        game.answersButtonArray[2] = game.answer2;
+        game.answersButtonArray[3] = game.answer3;
         //empty buttons
+        game.answer0 = new TextButton("", game.skin, "default");
         game.answer1 = new TextButton("", game.skin, "default");
         game.answer2 = new TextButton("", game.skin, "default");
         game.answer3 = new TextButton("", game.skin, "default");
-        game.answer4 = new TextButton("", game.skin, "default");
+
+        //empty Label
+        game.yearLabel = new Label("", game.skin);
+        game.timeLabel = new Label("", game.skin);
+        game.scoreLabel = new Label("0", game.skin);
     }
 }

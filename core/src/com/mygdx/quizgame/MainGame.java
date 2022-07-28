@@ -10,25 +10,46 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.utils.IntSet;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.quizgame.DBManagement.Database;
+import com.mygdx.quizgame.DBManagement.DesktopResult;
+import com.mygdx.quizgame.DBManagement.Result;
+import com.mygdx.quizgame.timehandling.Timer;
+
+import javax.xml.crypto.Data;
 
 public class MainGame extends Game {
+
+	//references to interfaces that need to be se in the constructor to make DB connectivity platform-indipendent
+	Database database;
+	Result result;
+	int quizAmount;
+
+	//need a data structure to contain all the remaining YearIDs to display. At the beginning, this intArray needs to contain all of the YearIDs present
+	IntArray yearIdAvailable;
+	int userScore;
+	Timer timer;
 
 	SpriteBatch batch;
 	Sprite animationSprite, backgroundSprite;
 	Viewport viewport;
 
-	Screen animationScreen, gameOverScreen, gameScreen, loadingScreen, pauseScreen, startScreen;
+	Screen animationScreen, gameScreen, loadingScreen, pauseScreen, startScreen;
 
-	TextButton startGame, quitGame, resumeGame, pauseGame, answer1, answer2, answer3, answer4;
+	TextButton startGame, quitGame, resumeGame, pauseGame, answer0, answer1, answer2, answer3;
+	//array grouping all the answers
+	TextButton[] answersButtonArray;
+	Label yearLabel, timeLabel, scoreLabel;
 
 	AssetManager assetManager;
 
 	Skin skin;
-	Skin skin2;
 
 	BitmapFont font;
 
@@ -36,6 +57,31 @@ public class MainGame extends Game {
 	final float WORLD_WIDTH = 45f;
 	final float WORLD_HEIGHT = 80f;
 
+	//to create the connection to the SQLlite database in a platform-indipendent environment,
+	//we need to implement a constructor of this class that takes the concrete implementations of the interfaces and sets the references of the class
+	public MainGame(Database database, Result result) {
+		this.database = database;
+		this.result = result;
+		//We need to set connection and get the first important data from the database
+		setDatabaseConnection();
+	}
+
+	private void setDatabaseConnection() {
+		//simply open the connection (the Connection object is now stored inside the instance of desktopDatabase)
+		database.openDatabase();
+
+		//at the beginning of the application, we can already count the total number of quiz present in our database and store that value in a field of this class.
+		//the count is made through a simple query to the YEAR table
+		result = database.queryDatabase("SELECT COUNT(*) AS TOT_QUIZ FROM YEAR WHERE YEAR IS NOT NULL");
+
+		//to retrieve the calculated value, I first need to move the resulset to the first row, then take the value:
+		result.moveToNext();
+		quizAmount = result.getInt(1);
+
+		//DEBUG
+		//Gdx.app.log("Number of Quiz", "The total number calculated is " + quizAmount);
+		System.out.println("the total number of quiz is " + quizAmount);
+	}
 
 	@Override
 	public void create () {
@@ -51,6 +97,17 @@ public class MainGame extends Game {
 		Gdx.input.setInputProcessor(new MyInputHandler(this));
 
 		setScreen(loadingScreen);
+
+	}
+
+	//this method will be automatically invoked by gameScreen Every time a new game starts
+	public void gameSetter() {
+		yearIdAvailable = new IntArray();
+		for (int i = 0; i < quizAmount; i++){
+			yearIdAvailable.add(i);
+		}
+		userScore = 0;
+		timer = new Timer(2, 0);
 
 	}
 
@@ -78,16 +135,18 @@ public class MainGame extends Game {
 
 		animationScreen.dispose();
 		gameScreen.dispose();
-		gameOverScreen.dispose();
 		startScreen.dispose();
 		loadingScreen.dispose();
 		pauseScreen.dispose();
+
+		//close DB connection
+		database.closeDatabase();
 	}
 
 
 	private void initScreens() {
+		//note that the only screen which is not present is lastScreen, because it is parametrized based on the victory or defeat of the player
 		animationScreen = new AnimationScreen(this);
-		gameOverScreen = new GameOverScreen(this);
 		pauseScreen = new PauseScreen(this);
 		startScreen = new StartScreen(this);
 		gameScreen = new GameScreen(this);
@@ -100,6 +159,5 @@ public class MainGame extends Game {
 		assetManager.load("Background.jpg", Texture.class);
 		assetManager.load("font.fnt", BitmapFont.class);
 		assetManager.load("uiskin.json", Skin.class);
-		assetManager.load("level-plane-ui.json", Skin.class);
 	}
 }
