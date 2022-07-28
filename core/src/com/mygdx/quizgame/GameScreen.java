@@ -59,7 +59,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //you repeat the show method only if this screen is called for a new game
         if (newGame == true) {
 
-            Gdx.app.log("tt", "entrato dentro if");
+            //Gdx.app.log("tt", "entrato dentro if");
 
             //it's important, BEFORE THE BEGINNING OF THE LOGIC, to restore the initial state of the IntArray containing the YearIDs and the other variables necessary to begin a new game
             game.gameSetter();
@@ -163,7 +163,8 @@ public class GameScreen extends InputAdapter implements Screen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         super.clicked(event, x, y);
-                        game.answersButtonArray[finalI].addAction(Actions.fadeOut(0.8f));
+                        game.answersButtonArray[finalI].addAction(Actions.fadeOut(0.6f));
+                        game.timer.sub10();
                     }
                 });
             }
@@ -284,7 +285,6 @@ public class GameScreen extends InputAdapter implements Screen {
         }
         //if there was an update, we update the label text:
         game.timeLabel.setText(game.timer.toString());
-
 
         stage.draw();
         stage.act();

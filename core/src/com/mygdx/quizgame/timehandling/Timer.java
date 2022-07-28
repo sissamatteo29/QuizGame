@@ -56,6 +56,30 @@ public class Timer {
         }
     }
 
+    public void sub1(){
+        if(seconds == 0){
+            if (minutes == 0){
+                finished = true;
+            } else {
+                //seconds to 0 but there still are minutes available
+                minutes--;
+                seconds = 59;
+            }
+        } else {
+            //seconds available
+            seconds--;
+        }
+    }
+
+    public void sub10(){
+        for(int i = 0; i < 10; i++){
+            this.sub1();
+            if (this.finished == true){
+                break;
+            }
+        }
+    }
+
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append(minutes).append(':');
