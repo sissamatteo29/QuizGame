@@ -46,8 +46,8 @@ public class AnimationScreen extends ScreenAdapter {
         stage.addActor(image);
         image.addAction(sequence(alpha(0), scaleTo(.1f, .1f),
                 parallel(fadeIn(2f, Interpolation.pow2),
-                        scaleTo(2f, 2f, 2.5f, Interpolation.pow5),
-                        moveTo(8.5f, 27.5f, 2f, Interpolation.swing)),
+                        scaleTo(3f, 3f, 2.5f, Interpolation.pow5),
+                        moveTo(3.3f, 20.5f, 2f, Interpolation.swing)),
                 delay(1.5f), fadeOut(1.25f), run(new Runnable() {
                     @Override
                     public void run() {
